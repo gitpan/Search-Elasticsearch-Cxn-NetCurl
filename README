@@ -1,0 +1,165 @@
+NAME
+    Search::Elasticsearch::Cxn::NetCurl - A Cxn implementation which uses
+    libcurl via Net::Curl
+
+VERSION
+    version 1.10
+
+DESCRIPTION
+    Provides an HTTP Cxn class based on Net::Curl. The "NetCurl" Cxn class
+    is very fast and uses persistent connections but requires XS and
+    "libcurl".
+
+    This class does Search::Elasticsearch::Role::Cxn::HTTP, whose
+    documentation provides more information.
+
+CONFIGURATION
+  "connect_timeout"
+    Unlike most HTTP backends, Net::Curl accepts a separate
+    "connect_timeout" parameter, which defaults to 2 seconds but can be
+    reduced in an environment with low network latency.
+
+  Inherited configuration
+    From Search::Elasticsearch::Role::Cxn::HTTP
+
+    *   node
+
+    *   max_content_length
+
+    *   deflate
+
+    From Search::Elasticsearch::Role::Cxn
+
+    *   request_timeout
+
+    *   ping_timeout
+
+    *   dead_timeout
+
+    *   max_dead_timeout
+
+    *   sniff_request_timeout
+
+    *   sniff_timeout
+
+    *   handle_args
+
+METHODS
+  "perform_request()"
+        ($status,$body) = $self->perform_request({
+            # required
+            method      => 'GET|HEAD|POST|PUT|DELETE',
+            path        => '/path/of/request',
+            qs          => \%query_string_params,
+
+            # optional
+            data        => $body_as_string,
+            mime_type   => 'application/json',
+            timeout     => $timeout
+        });
+
+    Sends the request to the associated Elasticsearch node and returns a
+    $status code and the decoded response $body, or throws an error if the
+    request failed.
+
+  Inherited methods
+    From Search::Elasticsearch::Role::Cxn::HTTP
+
+    *   scheme()
+
+    *   is_https()
+
+    *   userinfo()
+
+    *   default_headers()
+
+    *   max_content_length()
+
+    *   build_uri()
+
+    From Search::Elasticsearch::Role::Cxn
+
+    *   host()
+
+    *   port()
+
+    *   uri()
+
+    *   is_dead()
+
+    *   is_live()
+
+    *   next_ping()
+
+    *   ping_failures()
+
+    *   mark_dead()
+
+    *   mark_live()
+
+    *   force_ping()
+
+    *   pings_ok()
+
+    *   sniff()
+
+    *   process_response()
+
+SEE ALSO
+    *   Search::Elasticsearch::Role::Cxn::HTTP
+
+    *   Search::Elasticsearch::Cxn::Hijk
+
+    *   Search::Elasticsearch::Cxn::LWP
+
+    *   Search::Elasticsearch::Cxn::HTTPTiny
+
+BUGS
+    This is a stable API but this implemenation is new. Watch this space for
+    new releases.
+
+    If you have any suggestions for improvements, or find any bugs, please
+    report them to
+    <http://github.com/elasticsearch/elasticsearch-perl/issues>. I will be
+    notified, and then you'll automatically be notified of progress on your
+    bug as I make changes.
+
+SUPPORT
+    You can find documentation for this module with the perldoc command.
+
+        perldoc Search::Elasticsearch::Cxn::NetCurl
+
+    You can also look for information at:
+
+    *   GitHub
+
+        <http://github.com/elasticsearch/elasticsearch-perl>
+
+    *   CPAN Ratings
+
+        <http://cpanratings.perl.org/d/Search::Elasticsearch::Cxn::NetCurl>
+
+    *   Search MetaCPAN
+
+        <https://metacpan.org/module/Search::Elasticsearch::Cxn::NetCurl>
+
+    *   IRC
+
+        The #elasticsearch <irc://irc.freenode.net/elasticsearch> channel on
+        "irc.freenode.net".
+
+    *   Mailing list
+
+        The main Elasticsearch mailing list
+        <http://www.elasticsearch.org/community/forum/>.
+
+AUTHOR
+    Clinton Gormley <drtech@cpan.org>
+
+COPYRIGHT AND LICENSE
+    This software is Copyright (c) 2014 by Elasticsearch BV.
+
+    This is free software, licensed under:
+
+      The Apache License, Version 2.0, January 2004
+

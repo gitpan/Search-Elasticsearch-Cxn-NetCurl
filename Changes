@@ -1,0 +1,30 @@
+Revision history for Search::Elasticsearch::Cxn::NetCurl
+
+1.10    2014-03-05
+        Moved all modules to Search::Elasticsearch namespace.
+        See https://github.com/elasticsearch/elasticsearch-perl/issues/20
+
+1.05    2014-03-05
+        Deprecated the Elasticsearch namespace in favour of Search::Elasticsearch.
+        See https://github.com/elasticsearch/elasticsearch-perl/issues/20
+
+        Exposed connect_timeout setting for Cxn::NetCurl
+
+1.01    2014-02-09
+        Fixed plugin loader to work with latest version of Module::Runtime
+        which complains about undefined versions
+
+1.00    2014-02-07
+        Moved the NetCurl source code into the repo for Elasticsearch.pm
+
+0.03    2013-12-03
+        Removed custom timeouts - rely on defaults
+        Tidied up Curl imports
+
+0.02    2013-10-03
+        NetCurl needs longer ping/sniff timeouts on some platforms
+        Added full ES test suite
+
+0.01    2013-10-02
+        First release
+
