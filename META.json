@@ -4,7 +4,7 @@
       "Clinton Gormley <drtech@cpan.org>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Zilla version 5.013, CPAN::Meta::Converter version 2.133380",
+   "generated_by" : "Dist::Zilla version 5.012, CPAN::Meta::Converter version 2.133380",
    "license" : [
       "apache_2_0"
    ],
@@ -43,22 +43,21 @@
             "HTTP::Parser::XS" : "0",
             "Moo" : "0",
             "Net::Curl::Easy" : "0",
-            "Search::Elasticsearch" : "1.10",
-            "Search::Elasticsearch::Role::Cxn" : "0",
-            "Search::Elasticsearch::Role::Cxn::HTTP" : "0",
-            "Search::Elasticsearch::Role::Is_Sync" : "0",
+            "Search::Elasticsearch" : "1.13",
             "Try::Tiny" : "0",
             "namespace::clean" : "0"
          }
       },
       "test" : {
          "requires" : {
+            "Cpanel::JSON::XS" : "0",
             "Data::Dumper" : "0",
             "File::Temp" : "0",
+            "JSON::PP" : "0",
+            "JSON::XS" : "0",
             "Log::Any::Adapter" : "0",
             "Log::Any::Adapter::Callback" : "0",
-            "Search::Elasticsearch::Bulk" : "0",
-            "Search::Elasticsearch::Scroll" : "0",
+            "POSIX" : "0",
             "Sub::Exporter" : "0",
             "Test::Deep" : "0",
             "Test::Exception" : "0",
@@ -80,6 +79,6 @@
          "web" : "https://github.com/elasticsearch/elasticsearch-perl"
       }
    },
-   "version" : "1.10"
+   "version" : "1.13"
 }
 

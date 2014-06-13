@@ -8,27 +8,20 @@ use lib 't/lib';
 use Search::Elasticsearch::Bulk;
 use Log::Any::Adapter;
 
-my $es = do "es_sync.pl";
+my $es   = do "es_sync.pl";
+my $TRUE = $es->transport->serializer->decode('{"true":true}')->{true};
 
 my $is_0_90 = $es->info->{version}{number} =~ /^0.90/;
 
 $es->indices->delete( index => '_all' );
 
-my @Bad_Metadata = { index => '_bad', type => '_bad', source => {} };
 my @Std = (
     { id => 1, source => { count => 1 } },
     { id => 1, source => { count => 'foo' } },
     { id => 1, version => 10, source => {} },
 );
 
-my $b;
-
-## Request error - clears buffer
-$b = bulk( {}, @Bad_Metadata );
-throws_ok { $b->flush } qr/Request/, "Request error";
-is $b->_buffer_size, 0, 'Request error - buffer cleared';
-
-my ( $success_count, $error_count, $custom_count, $conflict_count );
+my ( $b, $success_count, $error_count, $custom_count, $conflict_count );
 
 # Cxn error - to not clear buffers
 
@@ -114,7 +107,7 @@ $b = bulk(
                 _id      => 1,
                 _version => 1,
                 status   => 201,
-                ok       => JSON::true(),
+                ok       => $TRUE,
             },
             0
         ),
