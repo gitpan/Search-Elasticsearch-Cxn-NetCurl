@@ -3,7 +3,7 @@ NAME
     libcurl via Net::Curl
 
 VERSION
-    version 1.13
+    version 1.15
 
 DESCRIPTION
     Provides an HTTP Cxn class based on Net::Curl. The "NetCurl" Cxn class
@@ -43,6 +43,55 @@ CONFIGURATION
     *   sniff_timeout
 
     *   handle_args
+
+SSL/TLS
+    Search::Elasticsearch::Cxn::NetCurl does no validation of remote hosts
+    by default.
+
+    This behaviour can be changed by passing the "ssl_options" parameter
+    with any options accepted by Net::Curl (see
+    <http://curl.haxx.se/libcurl/c/curl_easy_setopt.html>).
+
+    For instance, to check that the remote host has a trusted certificate,
+    and to avoid man-in-the-middle attacks, you could do the following:
+
+        use Search::Elasticsearch;
+        use Net::Curl::Easy qw(
+            CURLOPT_CAINFO
+        );
+
+        my $es = Search::Elasticsearch->new(
+            cxn   => 'NetCurl',
+            nodes => [
+                "https://node1.mydomain.com:9200",
+                "https://node2.mydomain.com:9200",
+            ],
+            ssl_options => {
+                CURLOPT_CAINFO()  => '/path/to/cacert.pem'
+            }
+        );
+
+    If you want your client to present its own certificate to the remote
+    server, then use:
+
+        use Net::Curl::Easy qw(
+            CURLOPT_CAINFO
+            CURLOPT_SSLCERT
+            CURLOPT_SSLKEY
+        );
+
+        my $es = Search::Elasticsearch->new(
+            cxn   => 'NetCurl',
+            nodes => [
+                "https://node1.mydomain.com:9200",
+                "https://node2.mydomain.com:9200",
+            ],
+            ssl_options => {
+                CURLOPT_CAINFO()      => '/path/to/cacert.pem'
+                CURLOPT_SSLCERT()     => '/path/to/client.pem',
+                CURLOPT_SSLKEY()      => '/path/to/client.pem',
+            }
+        );
 
 METHODS
   "perform_request()"

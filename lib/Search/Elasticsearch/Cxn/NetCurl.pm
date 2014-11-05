@@ -5,8 +5,8 @@ with 'Search::Elasticsearch::Role::Cxn::HTTP',
     'Search::Elasticsearch::Role::Cxn',
     'Search::Elasticsearch::Role::Is_Sync';
 
-use Search::Elasticsearch 1.13;
-our $VERSION = "1.13";
+use Search::Elasticsearch 1.15;
+our $VERSION = "1.15";
 
 use HTTP::Parser::XS qw(HEADERS_AS_HASHREF parse_http_response);
 use Try::Tiny;
@@ -42,16 +42,14 @@ sub perform_request {
     my $handle = $self->handle;
     $handle->reset;
 
-    #    $handle->setopt( CURLOPT_VERBOSE,     1 );
+    #        $handle->setopt( CURLOPT_VERBOSE,     1 );
 
     $handle->setopt( CURLOPT_HEADER,        0 );
     $handle->setopt( CURLOPT_TCP_NODELAY,   1 );
     $handle->setopt( CURLOPT_URL,           $uri );
     $handle->setopt( CURLOPT_CUSTOMREQUEST, $method );
 
-    $handle->setopt( CURLOPT_CONNECTTIMEOUT_MS,
-        $self->connect_timeout * 1000 );
-
+    $handle->setopt( CURLOPT_CONNECTTIMEOUT_MS, $self->connect_timeout * 1000 );
     $handle->setopt( CURLOPT_TIMEOUT_MS,
         1000 * ( $params->{timeout} || $self->request_timeout ) );
 
@@ -70,8 +68,14 @@ sub perform_request {
         if %headers;
 
     if ( $self->is_https ) {
-        $handle->setopt( CURLOPT_SSL_VERIFYPEER, 0 );
-        $handle->setopt( CURLOPT_SSL_VERIFYHOST, 0 );
+        my %opts
+            = $self->has_ssl_options
+            ? %{ $self->ssl_options }
+            : ( CURLOPT_SSL_VERIFYPEER => 0, CURLOPT_SSL_VERIFYHOST => 0 );
+
+        for ( keys %opts ) {
+            $handle->setopt( $_, $opts{$_} );
+        }
     }
 
     my $content = my $head = '';
@@ -135,7 +139,7 @@ Search::Elasticsearch::Cxn::NetCurl - A Cxn implementation which uses libcurl vi
 
 =head1 VERSION
 
-version 1.13
+version 1.15
 
 =head1 DESCRIPTION
 
@@ -187,6 +191,55 @@ From L<Search::Elasticsearch::Role::Cxn>
 =item * L<handle_args|Search::Elasticsearch::Role::Cxn/"handle_args">
 
 =back
+
+=head1 SSL/TLS
+
+L<Search::Elasticsearch::Cxn::NetCurl> does no validation of remote
+hosts by default.
+
+This behaviour can be changed by passing the C<ssl_options> parameter
+with any options accepted by L<Net::Curl> (see L<http://curl.haxx.se/libcurl/c/curl_easy_setopt.html>).
+
+For instance, to check that the remote host has a trusted certificate,
+and to avoid man-in-the-middle attacks, you could do the following:
+
+    use Search::Elasticsearch;
+    use Net::Curl::Easy qw(
+        CURLOPT_CAINFO
+    );
+
+    my $es = Search::Elasticsearch->new(
+        cxn   => 'NetCurl',
+        nodes => [
+            "https://node1.mydomain.com:9200",
+            "https://node2.mydomain.com:9200",
+        ],
+        ssl_options => {
+            CURLOPT_CAINFO()  => '/path/to/cacert.pem'
+        }
+    );
+
+If you want your client to present its own certificate to the remote
+server, then use:
+
+    use Net::Curl::Easy qw(
+        CURLOPT_CAINFO
+        CURLOPT_SSLCERT
+        CURLOPT_SSLKEY
+    );
+
+    my $es = Search::Elasticsearch->new(
+        cxn   => 'NetCurl',
+        nodes => [
+            "https://node1.mydomain.com:9200",
+            "https://node2.mydomain.com:9200",
+        ],
+        ssl_options => {
+            CURLOPT_CAINFO()      => '/path/to/cacert.pem'
+            CURLOPT_SSLCERT()     => '/path/to/client.pem',
+            CURLOPT_SSLKEY()      => '/path/to/client.pem',
+        }
+    );
 
 =head1 METHODS
 
