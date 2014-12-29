@@ -5,8 +5,8 @@ with 'Search::Elasticsearch::Role::Cxn::HTTP',
     'Search::Elasticsearch::Role::Cxn',
     'Search::Elasticsearch::Role::Is_Sync';
 
-use Search::Elasticsearch 1.15;
-our $VERSION = "1.15";
+use Search::Elasticsearch 1.17;
+our $VERSION = "1.17";
 
 use HTTP::Parser::XS qw(HEADERS_AS_HASHREF parse_http_response);
 use Try::Tiny;
@@ -67,15 +67,21 @@ sub perform_request {
         [ map { "$_: " . $headers{$_} } keys %headers ] )
         if %headers;
 
+    my %opts = %{ $self->handle_args };
     if ( $self->is_https ) {
-        my %opts
-            = $self->has_ssl_options
-            ? %{ $self->ssl_options }
-            : ( CURLOPT_SSL_VERIFYPEER => 0, CURLOPT_SSL_VERIFYHOST => 0 );
-
-        for ( keys %opts ) {
-            $handle->setopt( $_, $opts{$_} );
+        if ( $self->has_ssl_options ) {
+            %opts = ( %opts, %{ $self->ssl_options } );
         }
+        else {
+            %opts = (
+                %opts,
+                ( CURLOPT_SSL_VERIFYPEER => 0, CURLOPT_SSL_VERIFYHOST => 0 )
+            );
+        }
+    }
+
+    for ( keys %opts ) {
+        $handle->setopt( $_, $opts{$_} );
     }
 
     my $content = my $head = '';
@@ -139,7 +145,7 @@ Search::Elasticsearch::Cxn::NetCurl - A Cxn implementation which uses libcurl vi
 
 =head1 VERSION
 
-version 1.15
+version 1.17
 
 =head1 DESCRIPTION
 
